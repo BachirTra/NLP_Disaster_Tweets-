@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.datasets import fetch_openml
+
 from src.utils.logger import logger
 
 
@@ -25,8 +26,19 @@ def load_data(dataset_name: str, columns_to_lower: bool = False) -> pd.DataFrame
     if columns_to_lower:
         data.columns = data.columns.str.lower()
 
+    _cast_dtypes(data)
+
     logger.info(f"Loaded '{dataset_name}' dataset")
-    logger.info(f"Dataset description: {raw['DESCR']}")
     logger.info(f"Data shape: {data.shape}")
 
     return data
+
+
+def _cast_dtypes(data: pd.DataFrame) -> None:
+    """Cast columns to their intended types in-place."""
+    if "target" in data.columns:
+        data["target"] = data["target"].astype(bool)
+
+    for col in ("text", "keyword", "location"):
+        if col in data.columns:
+            data[col] = data[col].astype(pd.StringDtype())

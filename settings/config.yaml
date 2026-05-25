@@ -1,0 +1,56 @@
+data:
+  raw_dir: data/raw
+  processed_dir: data/processed
+
+split:
+  train_size: 0.70
+  val_size: 0.15
+  test_size: 0.15
+  random_state: 42
+
+preprocessing:
+  text_col: text
+  target_col: target
+  stemmed_col: preprocessed_text
+  lemma_col: clean_text
+  tokens_col: tokens
+
+tfidf:
+  ngram_range: [1, 2]
+  max_features: 10000
+  min_df: 3
+  sublinear_tf: true
+
+features:
+  numeric_all:
+    - kw_disaster_rate
+    - has_numbers
+    - text_length
+    - has_url
+    - exclamation_count
+    - question_count
+    - has_location
+    - word_count
+    - token_count
+    - unique_tokens
+    - preprocessed_len
+    - ttr
+    - compression_ratio
+    - avg_word_length
+    - uppercase_ratio
+    - is_retweet
+  numeric_linear:
+    - kw_disaster_rate
+    - has_numbers
+    - text_length
+    - has_url
+    - exclamation_count
+    - question_count
+    - has_location
+
+mlflow:
+  experiment_name: disaster-tweet-classifier
+  model_name: disaster-tweet-classifier
+
+logging:
+  level: DEBUG
