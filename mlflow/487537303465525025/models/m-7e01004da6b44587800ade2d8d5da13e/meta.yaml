@@ -1,0 +1,10 @@
+artifact_location: file:///Users/macbookpro/Desktop/DIC3/mlops/projet/projet_mlops/NLP_Disaster_Tweets-/mlflow/487537303465525025/models/m-7e01004da6b44587800ade2d8d5da13e/artifacts
+creation_timestamp: 1780769148295
+experiment_id: '487537303465525025'
+last_updated_timestamp: 1780769152758
+model_id: m-7e01004da6b44587800ade2d8d5da13e
+model_type: null
+name: model
+source_run_id: 9b0c8dfa57b144088ee38ce8faa96841
+status: 2
+status_message: null

@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/macbookpro/Desktop/DIC3/mlops/projet/projet_mlops/NLP_Disaster_Tweets-/mlflow/487537303465525025/66234f8b2956480fadc418be42ad5389/artifacts
+end_time: 1780701873390
+entry_point_name: ''
+experiment_id: '487537303465525025'
+lifecycle_stage: active
+run_id: 66234f8b2956480fadc418be42ad5389
+run_name: XGBoost_baseline
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1780701868924
+status: 3
+tags: []
+user_id: macbookpro

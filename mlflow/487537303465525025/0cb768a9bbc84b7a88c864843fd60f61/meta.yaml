@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/macbookpro/Desktop/DIC3/mlops/projet/projet_mlops/NLP_Disaster_Tweets-/mlflow/487537303465525025/0cb768a9bbc84b7a88c864843fd60f61/artifacts
+end_time: 1780772019858
+entry_point_name: ''
+experiment_id: '487537303465525025'
+lifecycle_stage: active
+run_id: 0cb768a9bbc84b7a88c864843fd60f61
+run_name: LR_baseline
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1780772014606
+status: 3
+tags: []
+user_id: macbookpro

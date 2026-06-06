@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/macbookpro/Desktop/DIC3/mlops/projet/projet_mlops/NLP_Disaster_Tweets-/mlflow/487537303465525025/ca0781eff5554d1c8241bf6cc56b5e2a/artifacts
+end_time: 1780773972850
+entry_point_name: ''
+experiment_id: '487537303465525025'
+lifecycle_stage: active
+run_id: ca0781eff5554d1c8241bf6cc56b5e2a
+run_name: XGBoost_optuna
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1780773942748
+status: 3
+tags: []
+user_id: macbookpro
