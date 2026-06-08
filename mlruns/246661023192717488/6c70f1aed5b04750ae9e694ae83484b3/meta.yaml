@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/macbookpro/Desktop/DIC3/mlops/projet/projet_mlops/NLP_Disaster_Tweets-/mlruns/246661023192717488/6c70f1aed5b04750ae9e694ae83484b3/artifacts
+end_time: 1780945308292
+entry_point_name: ''
+experiment_id: '246661023192717488'
+lifecycle_stage: active
+run_id: 6c70f1aed5b04750ae9e694ae83484b3
+run_name: LinearSVC_baseline
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1780945303311
+status: 3
+tags: []
+user_id: macbookpro

@@ -1,0 +1,6 @@
+artifact_location: file:///Users/macbookpro/Desktop/DIC3/mlops/projet/projet_mlops/NLP_Disaster_Tweets-/mlruns/246661023192717488
+creation_time: 1780935274431
+experiment_id: '246661023192717488'
+last_update_time: 1780935274431
+lifecycle_stage: active
+name: disaster-tweet-classifier

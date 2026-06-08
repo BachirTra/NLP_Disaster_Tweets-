@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/macbookpro/Desktop/DIC3/mlops/projet/projet_mlops/NLP_Disaster_Tweets-/mlruns/246661023192717488/f57e233966694ad3ba9fd14512e153bd/artifacts
+end_time: 1780947828727
+entry_point_name: ''
+experiment_id: '246661023192717488'
+lifecycle_stage: active
+run_id: f57e233966694ad3ba9fd14512e153bd
+run_name: SGD_optuna
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1780947825118
+status: 3
+tags: []
+user_id: macbookpro

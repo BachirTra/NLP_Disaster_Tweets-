@@ -1,0 +1,22 @@
+artifact_path: file:///Users/macbookpro/Desktop/DIC3/mlops/projet/projet_mlops/NLP_Disaster_Tweets-/mlruns/246661023192717488/models/m-8f9872a3fd01456da211082882015102/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.10.18
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.7.0
+mlflow_version: 3.1.1
+model_id: m-8f9872a3fd01456da211082882015102
+model_size_bytes: 45733
+model_uuid: m-8f9872a3fd01456da211082882015102
+prompts: null
+run_id: 0743144e1a5c45559ca9afee257c2566
+utc_time_created: '2026-06-08 19:03:43.778930'
