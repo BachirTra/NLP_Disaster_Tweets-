@@ -86,13 +86,9 @@ def preprocess_data(text: str) -> str:
 
 
 def clean_text(text: str) -> str:
-    """Lowercased, URL-stripped string — basis for lemmatized tokens (SHAP).
-
-    Raises:
-        ValueError: When *text* is empty or whitespace-only.
-    """
+    """Lowercased, URL-stripped string — basis for lemmatized tokens (SHAP)."""
     if not isinstance(text, str) or not text.strip():
-        raise ValueError("text must be a non-empty string")
+        return ""
     text = str(text).lower()
     text = _URL_RE.sub("", text)
     text = _SPEC_RE.sub("", text)

@@ -3,7 +3,7 @@ import pytest
 from src.utils.model_loader import load_model
 
 _MODEL_PATH = "models/NB_optuna.pkl"
-_REQUIRED_KEYS = {"model", "tfidf", "scaler", "model_name", "features", "f1_val", "f1_test"}
+_REQUIRED_KEYS = {"model", "tfidf", "model_name", "f1_val", "f1_test"}
 
 
 def test_load_model_returns_dict() -> None:

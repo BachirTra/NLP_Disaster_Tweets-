@@ -221,3 +221,6 @@ __marimo__/
 CLAUDE.md
 
 node_modules/
+
+# MLflow auto-generated runs (DVC pipeline) — metrics tracked in reports/metrics.json
+mlruns/

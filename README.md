@@ -13,31 +13,45 @@ Stack: scikit-learn · Multinomial Naive Bayes · TF-IDF · MLflow · Optuna · 
 ## Repository structure
 
 ```
-disaster-tweets-mlops/
+NLP_Disaster_Tweets-/
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # CI — tests automatiques (push/PR sur main & develop)
+├── .dvc/                       # Configuration DVC
 ├── data/
-│   ├── raw/
-│   └── processed/
-├── frontend/             # Angular 21 — single/batch prediction UI
-│   ├── src/app/          # Component, service, template, styles
-│   ├── nginx.conf        # SPA routing config (Docker)
+│   └── processed/              # Parquets générés par DVC (train/val/test)
+├── frontend/                   # Angular 21 — UI single/batch prediction
+│   ├── src/app/
+│   ├── nginx.conf
 │   └── package.json
-├── models/               # Serialised artifacts (dill)
-├── notebooks/            # 01 EDA · 02 Modeling · 03 Interpretability
-├── reports/figures/      # Auto-generated plots
-├── settings/             # config.yaml, params.py
+├── models/                     # Artefacts sérialisés (NB_optuna.pkl)
+├── notebooks/                  # 01_EDA · 01_splitting · 02_modeling · 03_interpretability
+├── reports/
+│   ├── figures/                # Plots SHAP/LIME auto-générés
+│   └── metrics.json            # Métriques DVC (f1_macro_val, f1_macro_test)
+├── scripts/
+│   ├── preprocess.py           # Stage DVC 1 — feature engineering + splits
+│   └── train.py                # Stage DVC 2 — entraînement NB_optuna + MLflow
+├── settings/
+│   ├── config.yaml             # Paramètres DVC (tfidf, split, features)
+│   └── params.py               # Constantes Python
 ├── src/
-│   ├── api/              # FastAPI app
+│   ├── api/                    # FastAPI app
 │   │   ├── main.py
 │   │   ├── routes/
 │   │   └── schemas/
-│   ├── data/             # preprocess.py, make_dataset.py
-│   ├── features/         # build.py
-│   ├── models/           # evaluate.py
-│   └── utils/            # config.py, logger.py, model_loader.py
+│   ├── data/                   # preprocess.py, make_dataset.py
+│   ├── features/               # build.py
+│   ├── models/                 # train.py, optimize.py, evaluate.py
+│   └── utils/                  # config.py, logger.py, model_loader.py
 ├── tests/
 │   ├── unit/
 │   └── integration/
+├── .dvcignore
+├── dvc.lock                    # Verrou DVC — état reproductible du pipeline
+├── dvc.yaml                    # Définition des stages DVC
 ├── Dockerfile
+├── MakeFile
 ├── docker-compose.yml
 ├── requirements.txt
 ├── requirements-api.txt
@@ -49,8 +63,8 @@ disaster-tweets-mlops/
 ## Installation
 
 ```bash
-git clone https://github.com/<your-username>/disaster-tweets-mlops.git
-cd disaster-tweets-mlops
+git clone https://github.com/BachirTra/NLP_Disaster_Tweets-.git
+cd NLP_Disaster_Tweets-
 python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
 # Version Python utilisée : 3.10.18 (requise pour la compatibilité avec requirements.txt)
 pip install -r requirements.txt
@@ -83,7 +97,8 @@ Execute in order — each notebook depends on outputs from the previous one:
 
 | # | Notebook | Output |
 |---|---|---|
-| 01 | `disastertweets_01_01_eda.ipynb` | EDA report, feature engineering |
+| 01a | `disastertweets_01_01_eda.ipynb` | EDA report, feature engineering |
+| 01b | `disastertweets_01_02_splitting.ipynb` | `data/processed/*.parquet` — splits train/val/test |
 | 02 | `disastertweets_02_modeling.ipynb` | `models/NB_optuna.pkl`, MLflow runs |
 | 03 | `disastertweets_03_interpretability.ipynb` | SHAP/LIME plots, robustness analysis |
 
@@ -210,7 +225,7 @@ Confusion matrix (test set, n=1 706):
 ```bash
 mlflow ui
 # ou avec chemin explicite :
-mlflow ui --backend-store-uri mlruns/
+mlflow ui --backend-store-uri mlflow/
 # Open http://localhost:5000
 ```
 
@@ -239,3 +254,20 @@ Afficher les métriques :
 ```bash
 dvc metrics show
 ```
+
+---
+
+## Intégration continue — CI
+
+Le pipeline CI est défini dans `.github/workflows/ci.yml` et se déclenche automatiquement à chaque **push** ou **pull request** sur `main` et `develop`.
+
+| Étape | Action |
+|---|---|
+| Checkout | Récupère le code source |
+| Setup Python 3.10 | Installe l'environnement |
+| Install dependencies | `requirements.txt` + `requirements-api.txt` + `requirements-dev.txt` |
+| Run tests | `pytest tests/ -v --cov=src --cov-fail-under=80` |
+
+Le seuil de couverture est fixé à **80 %** — le CI échoue si la couverture tombe en dessous.
+
+> Ce projet n'a pas de pipeline CD (Continuous Deployment) car il n'y a pas de cible de déploiement en production.

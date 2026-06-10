@@ -15,8 +15,7 @@ def test_clean_text_removes_mentions() -> None:
 
 
 def test_clean_text_handles_empty_string() -> None:
-    with pytest.raises(ValueError):
-        clean_text("")
+    assert clean_text("") == ""
 
 
 def test_clean_text_lowercases() -> None:

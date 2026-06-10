@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from settings.params import RANDOM_STATE, TRAIN_SIZE
+from settings.params import RANDOM_STATE, TRAIN_SIZE, VAL_SIZE, TEST_SIZE
 from src.data.make_dataset import load_data
 from src.features.build import add_features, add_kw_disaster_rate
 
@@ -21,16 +21,12 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 df = load_data("disaster-tweets", columns_to_lower=True)
 
-# Supprime les lignes sans texte (même comportement que le notebook 01_02_splitting)
-df = df[df["text"].notna() & (df["text"].str.strip() != "")]
-df = df.reset_index(drop=True)
-
 add_features(df)
 
 # Split stratifié 70 / 15 / 15
 train_df, temp_df = train_test_split(
     df,
-    test_size=1 - TRAIN_SIZE,
+    test_size=VAL_SIZE + TEST_SIZE,
     stratify=df["target"],
     random_state=RANDOM_STATE,
 )
