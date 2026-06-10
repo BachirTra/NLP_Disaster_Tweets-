@@ -1,0 +1,110 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python scripts/preprocess.py
+    deps:
+    - path: scripts/preprocess.py
+      hash: md5
+      md5: 20140cf36fec0be10988ec92b15ee123
+      size: 1689
+    - path: src/data/make_dataset.py
+      hash: md5
+      md5: 34b5c05e176c91d914c611f3ab55873b
+      size: 1092
+    - path: src/data/preprocess.py
+      hash: md5
+      md5: 40ef61a5c0e45d558af294b3933b73d7
+      size: 3844
+    - path: src/features/build.py
+      hash: md5
+      md5: d54ab6bcb9265191bfe669be00104daf
+      size: 3523
+    params:
+      settings/config.yaml:
+        preprocessing:
+          text_col: text
+          target_col: target
+          stemmed_col: preprocessed_text
+          lemma_col: clean_text
+          tokens_col: tokens
+        split:
+          train_size: 0.7
+          val_size: 0.15
+          test_size: 0.15
+          random_state: 42
+    outs:
+    - path: data/processed/test.parquet
+      hash: md5
+      md5: 41510bb9cf77a75d1f3972815fb25462
+      size: 468065
+    - path: data/processed/train.parquet
+      hash: md5
+      md5: 73d9059df1c28208e459e4c44df2bd7e
+      size: 1980058
+    - path: data/processed/val.parquet
+      hash: md5
+      md5: f169acd86f08bb6993b400baffbc841f
+      size: 468317
+  train:
+    cmd: python scripts/train.py
+    deps:
+    - path: data/processed/test.parquet
+      hash: md5
+      md5: 41510bb9cf77a75d1f3972815fb25462
+      size: 468065
+    - path: data/processed/train.parquet
+      hash: md5
+      md5: 73d9059df1c28208e459e4c44df2bd7e
+      size: 1980058
+    - path: data/processed/val.parquet
+      hash: md5
+      md5: f169acd86f08bb6993b400baffbc841f
+      size: 468317
+    - path: scripts/train.py
+      hash: md5
+      md5: e5c75c1d8d9962c3fc1178d32ae9d5dd
+      size: 3595
+    - path: src/models/train.py
+      hash: md5
+      md5: 9c25192014a5d0a349bbec5d15bed8fd
+      size: 1157
+    params:
+      settings/config.yaml:
+        features:
+          numeric_all:
+          - kw_disaster_rate
+          - has_numbers
+          - text_length
+          - has_url
+          - exclamation_count
+          - question_count
+          - has_location
+          - word_count
+          - token_count
+          - unique_tokens
+          - preprocessed_len
+          - ttr
+          - compression_ratio
+          - avg_word_length
+          - uppercase_ratio
+          - is_retweet
+          numeric_linear:
+          - kw_disaster_rate
+          - has_numbers
+          - text_length
+          - has_url
+          - exclamation_count
+          - question_count
+          - has_location
+        tfidf:
+          ngram_range:
+          - 1
+          - 2
+          max_features: 10000
+          min_df: 3
+          sublinear_tf: true
+    outs:
+    - path: reports/metrics.json
+      hash: md5
+      md5: bac7688e4f9c3b13fdfc933de5f6cb97
+      size: 55

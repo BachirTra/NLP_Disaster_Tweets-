@@ -1,0 +1,32 @@
+stages:
+  preprocess:
+    cmd: python scripts/preprocess.py
+    deps:
+      - scripts/preprocess.py
+      - src/data/make_dataset.py
+      - src/data/preprocess.py
+      - src/features/build.py
+    params:
+      - settings/config.yaml:
+          - split
+          - preprocessing
+    outs:
+      - data/processed/train.parquet
+      - data/processed/val.parquet
+      - data/processed/test.parquet
+
+  train:
+    cmd: python scripts/train.py
+    deps:
+      - scripts/train.py
+      - src/models/train.py
+      - data/processed/train.parquet
+      - data/processed/val.parquet
+      - data/processed/test.parquet
+    params:
+      - settings/config.yaml:
+          - tfidf
+          - features
+    metrics:
+      - reports/metrics.json:
+          cache: false

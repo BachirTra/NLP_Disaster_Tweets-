@@ -52,6 +52,7 @@ disaster-tweets-mlops/
 git clone https://github.com/<your-username>/disaster-tweets-mlops.git
 cd disaster-tweets-mlops
 python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
+# Version Python utilisée : 3.10.18 (requise pour la compatibilité avec requirements.txt)
 pip install -r requirements.txt
 pip install -r requirements-api.txt   # FastAPI + uvicorn
 pip install -r requirements-dev.txt   # pytest + coverage
@@ -67,17 +68,12 @@ cp .env.example .env
 
 ## Data
 
-Download from Kaggle:
+Le dataset est chargé automatiquement depuis [OpenML](https://www.openml.org) via `fetch_openml` — aucun téléchargement manuel nécessaire.
 
-```bash
-# Option 1 — Kaggle CLI
-kaggle datasets download -d vstepanenko/disaster-tweets -p data/raw --unzip
-
-# Option 2 — Direct link
-# https://www.kaggle.com/datasets/vstepanenko/disaster-tweets
+```python
+from sklearn.datasets import fetch_openml
+fetch_openml(name="disaster-tweets", as_frame=True, version="active")
 ```
-
-Place `train.csv` and `test.csv` in `data/raw/`.
 
 ---
 
@@ -198,7 +194,7 @@ curl -X POST http://localhost:8000/predict/batch \
 
 | Model | Optimiser | F1-val | F1-test | Notes |
 |---|---|---|---|---|
-| NB_optuna | Optuna 100 trials | **0.8003** | **0.7624** | TF-IDF unigrams+bigrams, α=0.7255 |
+| NB_optuna | Optuna 30 trials (NB/LR/SGD/LinearSVC) + 50 trials (XGBoost) | **0.8003** | **0.7624** | TF-IDF unigrams+bigrams, α=0.7255 |
 
 Confusion matrix (test set, n=1 706):
 
@@ -212,9 +208,34 @@ Confusion matrix (test set, n=1 706):
 ## MLflow experiment tracking
 
 ```bash
+mlflow ui
+# ou avec chemin explicite :
 mlflow ui --backend-store-uri mlruns/
 # Open http://localhost:5000
 ```
 
 All training runs (baselines + Optuna) are tracked under experiment `disaster-tweet-classifier`.  
 The final model is registered as `disaster-tweet-classifier` in the MLflow Model Registry.
+
+---
+
+## Reproducible pipeline — DVC
+
+Le pipeline ML est reproductible via DVC (Data Version Control) :
+
+```bash
+dvc repro
+```
+
+Deux étapes sont définies dans `dvc.yaml` :
+
+| Étape | Script | Sortie |
+|-------|--------|--------|
+| `preprocess` | `scripts/preprocess.py` | `data/processed/*.parquet` |
+| `train` | `scripts/train.py` | `models/NB_optuna.pkl`, `reports/metrics.json` |
+
+Afficher les métriques :
+
+```bash
+dvc metrics show
+```
