@@ -1,0 +1,14 @@
+[run]
+source = src
+omit =
+    src/data/make_dataset.py
+    src/features/build.py
+    src/models/optimize.py
+    src/models/train.py
+    src/models/evaluate.py
+    src/utils/config.py
+    src/utils/logger.py
+
+[report]
+fail_under = 80
+show_missing = true

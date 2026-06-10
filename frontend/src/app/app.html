@@ -1,0 +1,242 @@
+<div class="shell">
+
+  <!-- ─── HEADER ───────────────────────────────────────────────────── -->
+  <header class="hdr">
+    <div class="hdr-left">
+      <span class="hdr-icon">▲</span>
+      <span class="hdr-title">DISASTER&nbsp;DETECTION&nbsp;SYSTEM</span>
+    </div>
+    <div class="hdr-right">
+      <span class="hdr-model">NB_OPTUNA&nbsp;·&nbsp;F1-TEST=0.7624</span>
+      <span class="status-pill">
+        <span class="status-dot"></span>
+        ONLINE
+      </span>
+    </div>
+  </header>
+
+  <!-- ─── TABS ─────────────────────────────────────────────────────── -->
+  <nav class="tabs-bar">
+    <button
+      class="tab"
+      [class.tab--active]="activeTab() === 'single'"
+      (click)="setTab('single')"
+    >
+      <span class="tab-index">01</span>
+      SINGLE&nbsp;TWEET
+    </button>
+    <button
+      class="tab"
+      [class.tab--active]="activeTab() === 'batch'"
+      (click)="setTab('batch')"
+    >
+      <span class="tab-index">02</span>
+      BATCH&nbsp;ANALYSIS
+    </button>
+  </nav>
+
+  <!-- ─── CONTENT ───────────────────────────────────────────────────── -->
+  <main class="content">
+
+    <!-- ══════════════════ SINGLE TWEET ══════════════════════════════ -->
+    @if (activeTab() === 'single') {
+      <div class="panel">
+
+        <div class="section-head">INPUT</div>
+
+        <div class="input-block">
+          <textarea
+            class="tweet-area"
+            placeholder="Paste or type a tweet to classify..."
+            [value]="singleText()"
+            (input)="singleText.set($any($event.target).value)"
+            (keydown.control.enter)="analyzeSingle()"
+            maxlength="500"
+            rows="4"
+          ></textarea>
+          <div class="input-foot">
+            <span class="char-count" [class.char-warn]="singleCharCount() > 440">
+              {{ singleCharCount() }}&thinsp;/&thinsp;500
+            </span>
+            <span class="hint">CTRL+ENTER to submit</span>
+            <button
+              class="btn btn--primary"
+              (click)="analyzeSingle()"
+              [disabled]="singleLoading() || !singleText().trim()"
+            >
+              @if (singleLoading()) {
+                <span class="spinner"></span>ANALYZING
+              } @else {
+                ANALYZE&ensp;→
+              }
+            </button>
+          </div>
+        </div>
+
+        @if (singleError()) {
+          <div class="error-bar">⚠&ensp;{{ singleError() }}</div>
+        }
+
+        @if (singleResult(); as r) {
+          <div class="result-card" [class.result-card--disaster]="r.prediction === 1">
+
+            <div class="verdict-row">
+              <span class="verdict-badge" [class.verdict-badge--disaster]="r.prediction === 1">
+                @if (r.prediction === 1) { ⚡ DISASTER } @else { ✓ NOT DISASTER }
+              </span>
+              <span class="verdict-conf">{{ confPct(r) }}% confidence</span>
+            </div>
+
+            <div class="bar-track">
+              <div
+                class="bar-fill"
+                [class.bar-fill--disaster]="r.prediction === 1"
+                [style]="barStyle(r)"
+              ></div>
+            </div>
+
+            <div class="prob-table">
+              <div class="prob-row">
+                <span class="pk">P(DISASTER)</span>
+                <span class="pv">{{ r.probability_disaster.toFixed(4) }}</span>
+              </div>
+              <div class="prob-row">
+                <span class="pk">P(NOT DISASTER)</span>
+                <span class="pv">{{ r.probability_not_disaster.toFixed(4) }}</span>
+              </div>
+              <div class="prob-row prob-row--meta">
+                <span class="pk">MODEL</span>
+                <span class="pv pv--dim">{{ r.model_version }}</span>
+              </div>
+              <div class="prob-row prob-row--meta">
+                <span class="pk">INFERENCE</span>
+                <span class="pv pv--dim">{{ r.inference_time_ms.toFixed(2) }} ms</span>
+              </div>
+            </div>
+
+          </div>
+        }
+
+      </div>
+    }
+
+    <!-- ══════════════════ BATCH ANALYSIS ════════════════════════════ -->
+    @if (activeTab() === 'batch') {
+      <div class="panel">
+
+        <div class="section-head">BATCH INPUT — UP TO 50 TWEETS</div>
+
+        <div class="batch-inputs">
+          @for (tweet of batchTweets(); track $index; let i = $index) {
+            <div class="batch-row">
+              <span class="batch-num">{{ (i + 1).toString().padStart(2, '0') }}</span>
+              <input
+                class="batch-input"
+                type="text"
+                placeholder="Tweet text..."
+                [value]="tweet"
+                (input)="updateTweet(i, $any($event.target).value)"
+                maxlength="500"
+              />
+              <button class="btn-remove" (click)="removeTweet(i)" title="Remove row">×</button>
+            </div>
+          }
+        </div>
+
+        <div class="batch-ctrls">
+          <button
+            class="btn btn--ghost"
+            (click)="addTweet()"
+            [disabled]="batchTweets().length >= 50"
+          >+ ADD ROW</button>
+          <button
+            class="btn btn--ghost"
+            (click)="showPaste.update(v => !v)"
+          >{{ showPaste() ? '↑ HIDE PASTE' : '↓ PASTE MODE' }}</button>
+          <span class="batch-ready">{{ batchValidCount() }} tweet{{ batchValidCount() !== 1 ? 's' : '' }} ready</span>
+        </div>
+
+        @if (showPaste()) {
+          <div class="paste-block">
+            <div class="section-head section-head--sm">PASTE — ONE TWEET PER LINE</div>
+            <textarea
+              class="paste-area"
+              placeholder="Tweet one&#10;Tweet two&#10;Tweet three..."
+              [value]="pasteText()"
+              (input)="pasteText.set($any($event.target).value)"
+              rows="5"
+            ></textarea>
+            <button
+              class="btn btn--secondary"
+              (click)="parsePaste()"
+              [disabled]="!pasteText().trim()"
+            >PARSE &amp; LOAD →</button>
+          </div>
+        }
+
+        <div class="batch-action-bar">
+          <button
+            class="btn btn--primary btn--wide"
+            (click)="analyzeBatch()"
+            [disabled]="batchLoading() || batchValidCount() === 0"
+          >
+            @if (batchLoading()) {
+              <span class="spinner"></span>ANALYZING {{ batchValidCount() }} TWEETS
+            } @else {
+              ANALYZE ALL&ensp;→
+            }
+          </button>
+        </div>
+
+        @if (batchError()) {
+          <div class="error-bar">⚠&ensp;{{ batchError() }}</div>
+        }
+
+        @if (batchResult(); as batch) {
+          <div class="batch-results">
+            <div class="batch-summary">
+              <span class="bs-total">{{ batch.total }} TWEETS CLASSIFIED · {{ batch.total_time_ms.toFixed(1) }} ms</span>
+              <span class="bs-disaster">⚡ DISASTER: {{ disasterCount(batch) }}</span>
+              <span class="bs-safe">✓ SAFE: {{ batch.total - disasterCount(batch) }}</span>
+            </div>
+            <div class="results-list">
+              @for (r of batch.results; track $index; let i = $index) {
+                <div
+                  class="res-row"
+                  [class.res-row--disaster]="r.prediction === 1"
+                  [style.animation-delay.ms]="i * 55"
+                >
+                  <span class="rr-num">{{ (i + 1).toString().padStart(2, '0') }}</span>
+                  <span class="rr-badge" [class.rr-badge--disaster]="r.prediction === 1">
+                    {{ r.prediction === 1 ? 'DISASTER' : 'SAFE' }}
+                  </span>
+                  <div class="rr-bar-wrap">
+                    <div
+                      class="rr-bar-fill"
+                      [class.rr-bar-fill--disaster]="r.prediction === 1"
+                      [style]="barStyle(r)"
+                    ></div>
+                  </div>
+                  <span class="rr-pct">{{ confPct(r) }}%</span>
+                  <span class="rr-text" [title]="validBatchTweets()[i]">{{ truncatedTweet(i) }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+      </div>
+    }
+
+  </main>
+
+  <!-- ─── FOOTER ─────────────────────────────────────────────────── -->
+  <footer class="foot">
+    <span>DISASTER TWEETS CLASSIFIER</span>
+    <span class="foot-sep">·</span>
+    <span>API: localhost:8000</span>
+    <span class="foot-sep">·</span>
+    <span>NB_OPTUNA · F1-TEST=0.7624</span>
+  </footer>
+
+</div>
